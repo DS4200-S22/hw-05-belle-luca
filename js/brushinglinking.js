@@ -176,11 +176,60 @@ d3.csv("data/iris.csv").then((data) => {
                               .attr("r", 8)
                               .style("fill", (d) => color(d.Species))
                               .style("opacity", 0.5);
+        //TODO: Define a brush (call it brush1)
+  let brush2 = d3.brush()
+        .extent([[0, 0], [width, height]]);
+  
+      svg2.call(brush2);
   }
 
   //TODO: Barchart with counts of different species
   {
-    // Bar chart code here 
+    const data1 = [
+      {name: 'setosa', count: 50},
+      {name: 'versicolor', count: 50},
+      {name: 'virginica', count: 50}];
+
+    let xKey3 = "Species";
+    let yKey3 = "Count";
+    let maxY3 = d3.max(data1, function(d) { return d.count; });
+
+  let xScale3 = d3.scaleBand()
+            .domain(d3.range(data1.length))
+            .range([margin.left, width - margin.right])
+            .padding(0.1); 
+
+let yScale3 = d3.scaleLinear()
+            .domain([0,maxY3])
+            .range([height-margin.bottom,margin.top]); 
+  
+  svg3.append("g")
+      .attr("transform", `translate(${margin.left}, 0)`) 
+      .call(d3.axisLeft(yScale3)) 
+      .attr("font-size", '20px')
+      .call((g) => g.append("text")
+          .attr("x", 0)
+          .attr("y", margin.top - 20)
+         .attr("fill", "black")
+          .attr("text-anchor", "end")
+          .text(yKey3)); 
+  
+  svg3.append("g")
+    .attr("transform", `translate(0,${height - margin.bottom})`) 
+    .call(d3.axisBottom(xScale3) 
+            .tickFormat(i => data1[i].name))  
+    .attr("font-size", '20px'); 
+
+    svg3.selectAll("bar") 
+    .data(data1) 
+    .enter()  
+    .append("rect")
+      .attr("class", "bar") 
+      .attr("x", (d,i) => xScale3(i)) 
+      .attr("y", (d) => yScale3(d.count)) 
+      .attr("height", (d) => (height - margin.bottom) - yScale3(d.count)) 
+      .attr("width", xScale3.bandwidth()) 
+      .style("fill", (d) => color(d.name))
   }
 
   //Brushing Code---------------------------------------------------------------------------------------------
